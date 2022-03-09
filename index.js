@@ -2,6 +2,8 @@ const { urlencoded } = require("express");
 
 const express = require("express");
 
+const createError = require("http-errors");
+
 const { append } = require("express/lib/response");
 
 const mongoose = require("mongoose");
@@ -23,6 +25,27 @@ const PORT = common.config()["PORT"];
 const URL = common.config()["MONGODB_URL"];
 
 app.use("/api",router);
+
+app.use((request,response,next)=>{
+    // const err = new Error('not found');
+
+    // err.status = 404;
+    // next(err);
+
+    next(createError(404,'not found'));
+});
+app.use((error,request,response,next)=>{
+
+    response.status(error.status||500);
+    response.send({
+        error:{
+            status : error.status||500,
+            message : error.message
+        }
+    });
+
+
+});
 
 console.log(PORT);
 
